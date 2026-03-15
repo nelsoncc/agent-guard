@@ -1,0 +1,29 @@
+default: BLOCKED
+
+allow:
+  - web_search
+  - read_file
+
+deny:
+  - delete_db
+
+requireConsent:
+  - send_email
+
+risks:
+  nuke_everything: CRITICAL
+  write_file: HIGH
+  read_file: LOW
+
+contextRules:
+  - tool: debug_tool
+    action: ALLOW
+    environment: DEV
+  - tool: deploy
+    action: BLOCKED
+    environment: DEV
+  - tool: deploy
+    action: REQUIRE_CONSENT
+    environment: STAGING
+  - tool: admin_reset
+    action: REQUIRE_CONSENT

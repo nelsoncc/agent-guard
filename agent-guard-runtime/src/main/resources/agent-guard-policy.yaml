@@ -1,0 +1,89 @@
+# agent-guard-policy.yaml
+# Example Agent Guard policy file — policy-as-code (Milestone 3, Issue #20)
+#
+# Load with:
+#   ToolPolicy policy = PolicyFileLoader.fromClasspath("agent-guard-policy.yaml");
+#   ToolPolicy policy = PolicyFileLoader.fromFile(Path.of("/etc/myapp/policy.yaml"));
+#
+# ─────────────────────────────────────────────────────────────────────────────
+# DEFAULT ACTION
+# What happens to any tool not matched by an explicit rule.
+# Recommended: BLOCKED (deny-all) for production agents.
+# Use ALLOWED (allow-all) only during development.
+# ─────────────────────────────────────────────────────────────────────────────
+default: BLOCKED
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ALLOWLIST
+# Tools the agent is always permitted to call.
+# ─────────────────────────────────────────────────────────────────────────────
+allow:
+  - web_search
+  - read_file
+  - list_directory
+  - get_weather
+  - calculator
+
+# ─────────────────────────────────────────────────────────────────────────────
+# DENYLIST
+# Tools the agent is never permitted to call, regardless of context.
+# Takes priority over allowlist and context rules.
+# ─────────────────────────────────────────────────────────────────────────────
+deny:
+  - delete_db
+  - wipe_all_data
+  - execute_arbitrary_code
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONSENT REQUIRED
+# Tools that require explicit human approval before execution.
+# Execution pauses until the ConsentHandler resolves.
+# ─────────────────────────────────────────────────────────────────────────────
+requireConsent:
+  - send_email
+  - post_to_slack
+  - create_pull_request
+  - deploy_to_production
+
+# ─────────────────────────────────────────────────────────────────────────────
+# RISK OVERRIDES
+# Assign explicit risk levels to tools.
+# CRITICAL → always BLOCKED
+# HIGH     → REQUIRE_CONSENT (unless explicitly allowed)
+# MEDIUM   → ALLOWED (with audit log)
+# LOW      → ALLOWED
+# ─────────────────────────────────────────────────────────────────────────────
+risks:
+  delete_file: CRITICAL
+  overwrite_file: HIGH
+  send_email: HIGH
+  read_file: LOW
+  web_search: LOW
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONTEXT-AWARE RULES
+# Rules that apply only in a specific environment (DEV | STAGING | PROD).
+# Evaluated before all other rules — first match wins.
+#
+# Use this to allow debugging tools only in development, or to require
+# stricter approval in production without changing the base policy.
+# ─────────────────────────────────────────────────────────────────────────────
+contextRules:
+  # debug_tool is allowed in DEV (base policy would block it)
+  - tool: debug_tool
+    action: ALLOW
+    environment: DEV
+
+  # deploy_to_production requires consent in STAGING
+  - tool: deploy_to_production
+    action: REQUIRE_CONSENT
+    environment: STAGING
+
+  # deploy_to_production is outright blocked in DEV (protect against accidents)
+  - tool: deploy_to_production
+    action: BLOCKED
+    environment: DEV
+
+  # admin_reset requires consent in any environment (no environment filter)
+  - tool: admin_reset
+    action: REQUIRE_CONSENT

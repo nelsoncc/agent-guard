@@ -1,0 +1,73 @@
+# Maven build output
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# IDE — IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# IDE — Eclipse
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# IDE — VS Code
+.vscode/
+
+# IDE — NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build tools
+.gradle/
+build/
+
+# Maven wrapper (commit the jar but not local settings)
+.mvn/wrapper/maven-wrapper.properties
+!.mvn/wrapper/maven-wrapper.jar
+
+# Credentials / secrets — NEVER commit these
+*.p12
+*.jks
+*.pem
+*.key
+.env
+.env.*
+secrets.properties
+
+# Log files
+*.log
+logs/
+
+# Generated Javadoc
+docs/api/
+
+# JaCoCo coverage reports (generated during build)
+**/target/site/jacoco/
+jacoco.exec
+
+# Checkstyle / PMD reports
+checkstyle-result.xml
+pmd.xml
+
+# sdk
+.sdkmanrc
+
+# Claude Code local config
+.claude/
